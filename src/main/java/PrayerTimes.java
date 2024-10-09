@@ -9,12 +9,14 @@ public class PrayerTimes {
     private int day;
     private int year;
     private double utcOffset;
+    private boolean asrHanafi;
 
     public PrayerTimes(int month, int day, int year, double utcOffset) {
         this.month = month;
         this.day = day;
         this.year = year;
         this.utcOffset = utcOffset;
+        this.asrHanafi = false;
     }
 
     public PrayerTimes(){
@@ -23,6 +25,7 @@ public class PrayerTimes {
         this.day = currentDateTime.getDayOfMonth();
         this.year = currentDateTime.getYear();
         this.utcOffset = calcTimezone();
+        this.asrHanafi = false;
     }
 
     private ZonedDateTime getCurrentDateTime(){
@@ -47,8 +50,12 @@ public class PrayerTimes {
         System.out.printf("Year: %4d | ",this.year);
         System.out.printf("UTC Offset: %1.1f", this.utcOffset);
     }
+
+
     public static void main (String[] args){
         PrayerTimes prayertimes = new PrayerTimes();
         prayertimes.printDateTime();
+        Location location = new Location(true);
+        System.err.println(location.getLocationName());
     }
 }
