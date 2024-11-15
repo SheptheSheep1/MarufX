@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 
 public class PrayerTimes {
     private int month;
@@ -109,12 +110,21 @@ public class PrayerTimes {
         return (B + C + D + day + 1720994.5);
     }
 
-    private static double[] calcSunDecl(double julianDay){
+    public static double[] calcSunDecl(double julianDay){
         // return array of doubles at fixed size 2 containing T (fraction of Earth's orbit cycle in rad since epoch) and
-        // DELTA (sun declination) at indices 0 and 1 respectively
+        // DELTA (precise sun declination angle) at indices 0 and 1 respectively
         double T = (2.0 * Math.PI * (julianDay - 2451545.0)) / 365.25;
         double DELTA = 0.37877 + (23.264 * Math.sin(Math.toRadians((57.297*T) - 79.547))) + (0.3812 * Math.sin(Math.toRadians((2*57.297*T) - 82.682))) + (0.17132 * Math.sin(Math.toRadians((3*57.297*T) - 59.722)));
         return new double[]{T, DELTA};
+    }
+
+    public static double calcEqTime(double julianDays){
+        // takes julian days as parameter and returns equation of time at that parameter
+        double U = (julianDays - 2451545.0) / 36525;
+        double L0 = 280.46607 + 36000.7698 * U;
+        double ET1000 = -(1789.0 + 237.0*U) * Math.sin(Math.toRadians(L0)) - (7146.0 - 62.0*U) * Math.cos(Math.toRadians(L0)) + (9934.0 - 14.0*U) * Math.sin(Math.toRadians(2.0*L0)) - (29.0 + 5.0*U) * Math.cos(Math.toRadians(2.0*L0)) + (74.0 + 10.0*U) * Math.sin(Math.toRadians(3.0*L0)) + (320.0 - 4.0*U) * Math.cos(Math.toRadians(3.0*L0)) - 212.0*Math.sin(Math.toRadians(4.0*L0));
+        //System.out.printf("\nU: %f\nL0: %f\nET1000: %f\n", U, L0, ET1000);
+        return ET1000 / 1000.0;
     }
 
     public void printDateTime(){
@@ -134,6 +144,8 @@ public class PrayerTimes {
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
-        System.out.println(PrayerTimes.calcJD(2024, 11, 15.024306));
+        double julianDays = PrayerTimes.calcJD(2024, 11, 15.024306);
+        System.out.println(Arrays.toString(PrayerTimes.calcSunDecl(julianDays)));
+        System.out.println("Equation of Time: " + PrayerTimes.calcEqTime(julianDays));
     }
 }
