@@ -5,6 +5,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class PrayerTimes {
     private int month;
@@ -127,6 +128,15 @@ public class PrayerTimes {
         return ET1000 / 1000.0;
     }
 
+    public static double calcSunTT(double utcOffset, double longitude, double eqTime){
+        // takes UTC Offset, longitude, and Equation of Time and returns Sun Transit Time
+        return (12.0 + utcOffset - (longitude / 15.0) - (eqTime / 60.0));
+    }
+
+    public static HashMap<String, Double> calcSunAltitudes(){
+        return null;
+    }
+
     public void printDateTime(){
         System.out.printf("\nMonth: %2d | ",this.month);
         System.out.printf("Day: %2d | ",this.day);
@@ -147,5 +157,6 @@ public class PrayerTimes {
         double julianDays = PrayerTimes.calcJD(2024, 11, 15.024306);
         System.out.println(Arrays.toString(PrayerTimes.calcSunDecl(julianDays)));
         System.out.println("Equation of Time: " + PrayerTimes.calcEqTime(julianDays));
+        System.out.println("Transit Time: " + PrayerTimes.calcSunTT(-7.0, -111.939896, PrayerTimes.calcEqTime(julianDays)));
     }
 }
