@@ -3,6 +3,7 @@ package com.shep.marufx;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -19,24 +20,17 @@ public class Location {
     private String locationName;
     private boolean debug;
 
-    public Location(String query, boolean debug) {
-        try {
-            setLocationQuery(query);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public Location(String query, boolean debug) throws IOException {
+        setLocationQuery(query);
         this.debug = debug;
     }
-    public Location(boolean debug){
-        try {
-            setLocationIP();
-        }catch(Exception e){
-            throw new RuntimeException(e);
-        }
+    public Location(boolean debug) throws IOException{
+        setLocationIP();
         this.debug = debug;
     }
 
-    private void setLocationIP() throws Exception {
+    private void setLocationIP() throws IOException {
+        // get request to ip-api.com for json containing approx. lat and long
         String urlString = "http://ip-api.com/json/";
         URL url = new URL(urlString);
         URLConnection hc = url.openConnection();
@@ -53,7 +47,7 @@ public class Location {
         this.locationName = locationName;
     }
 
-    private void setLocationQuery(String query) throws Exception {
+    private void setLocationQuery(String query) throws IOException {
         // filter query for url format
         String queryF = URLEncoder.encode(query, StandardCharsets.UTF_8);
         String urlString = String.format("https://nominatim.openstreetmap.org/search?format=%s&q=%s", "json", queryF);
@@ -102,9 +96,18 @@ public class Location {
     }
 
     public static void main(String[] args){
-        Location location = new Location(true);
-        Location location_query = new Location("tempe, az",true);
-        System.out.printf("\nlatitude: %f longitude: %f Location Name: %s\n", location.getLatitude(), location.getLongitude(), location.getLocationName());
-        System.out.printf("\nlatitude: %f longitude: %f Location Name: %s\n", location_query.getLatitude(), location_query.getLongitude(), location_query.getLocationName());
+        Location location;
+        try {
+            location = new Location(true);
+            System.out.printf("\nlatitude: %f longitude: %f Location Name: %s\n", location.getLatitude(), location.getLongitude(), location.getLocationName());
+        } catch (IOException e) {
+            System.err.println("Can't find location from IP");
+        }
+        try{
+            Location location_query = new Location("tempe, az",true);
+            System.out.printf("\nlatitude: %f longitude: %f Location Name: %s\n", location_query.getLatitude(), location_query.getLongitude(), location_query.getLocationName());
+        } catch (IOException e) {
+            System.err.println("Can't find location from query");
+        }
     }
 }
