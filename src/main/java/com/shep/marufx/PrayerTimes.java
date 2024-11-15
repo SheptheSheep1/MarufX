@@ -133,8 +133,18 @@ public class PrayerTimes {
         return (12.0 + utcOffset - (longitude / 15.0) - (eqTime / 60.0));
     }
 
-    public static HashMap<String, Double> calcSunAltitudes(){
-        return null;
+    public static HashMap<String, Double> calcSunAltitudes(double fajrAngle, double ishaAngle, int elevation, boolean asrHanafi, double sunDelta, double latitude){
+        HashMap<String, Double> sunAltitudes = new HashMap<>();
+        int asrMethod = 1;
+        if(asrHanafi == true){asrMethod = 2;}
+        double saFajr = -(fajrAngle);
+        double saSunrise = -0.8333 - (0.0347 * Math.sqrt((double)elevation));
+        double saIsha  = -(ishaAngle);
+        sunAltitudes.put("fajr", saFajr);
+        sunAltitudes.put("sunrise", saSunrise);
+        sunAltitudes.put("maghrib", saSunrise);
+        sunAltitudes.put("isha", saIsha);
+        return sunAltitudes;
     }
 
     public void printDateTime(){
