@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+
 public class PrayerTimes {
     private int month;
     private int day;
@@ -48,7 +49,9 @@ public class PrayerTimes {
 
     public static double calcJD(int year, int month, double day){
         /*
-        Adapted from Python function
+
+        Adapted from Python function.
+
         Convert a date to Julian Day.
 
         Algorithm from 'Practical Astronomy with your Calculator or Spreadsheet',
@@ -77,6 +80,7 @@ public class PrayerTimes {
 
         date_to_jd(1985,2,17.25)
         2446113.75
+
          */
         int yearp;
         int monthp;
@@ -105,11 +109,19 @@ public class PrayerTimes {
         return (B + C + D + day + 1720994.5);
     }
 
+    private static double[] calcSunDecl(double julianDay){
+        // return array of doubles at fixed size 2 containing T (fraction of Earth's orbit cycle in rad since epoch) and
+        // DELTA (sun declination) at indices 0 and 1 respectively
+        double T = (2.0 * Math.PI * (julianDay - 2451545.0)) / 365.25;
+        double DELTA = 0.37877 + (23.264 * Math.sin(Math.toRadians((57.297*T) - 79.547))) + (0.3812 * Math.sin(Math.toRadians((2*57.297*T) - 82.682))) + (0.17132 * Math.sin(Math.toRadians((3*57.297*T) - 59.722)));
+        return new double[]{T, DELTA};
+    }
+
     public void printDateTime(){
         System.out.printf("\nMonth: %2d | ",this.month);
         System.out.printf("Day: %2d | ",this.day);
         System.out.printf("Year: %4d | ",this.year);
-        System.out.printf("UTC Offset: %1.1f\n", this.utcOffset);
+        System.out.printf("UTC Offset: %2.1f\n", this.utcOffset);
     }
 
 
