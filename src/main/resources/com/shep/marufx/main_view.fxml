@@ -34,7 +34,7 @@
                         <Label fx:id="asr" alignment="CENTER" prefHeight="169.0" prefWidth="305.0" text="Asr:" GridPane.rowIndex="3" />
                         <Label fx:id="maghrib" alignment="CENTER" prefHeight="220.0" prefWidth="405.0" text="Maghrib:" GridPane.rowIndex="4" />
                         <Label fx:id="isha" alignment="CENTER" prefHeight="138.0" prefWidth="273.0" text="Isha:" GridPane.rowIndex="5" />
-                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="100.0" prefWidth="174.0" text="Label" GridPane.columnIndex="1" />
+                        <Label fx:id="fajrTime" alignment="CENTER" contentDisplay="CENTER" prefHeight="100.0" prefWidth="174.0" text="Label" GridPane.columnIndex="1" />
                         <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="100.0" prefWidth="195.0" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="112.0" prefWidth="245.0" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                         <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="151.0" prefWidth="347.0" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="3" />

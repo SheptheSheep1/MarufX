@@ -22,11 +22,19 @@ public class CalcMethod {
         else if (stringArray[4].equalsIgnoreCase("N")){this.fixed = false;}
     }
     public CalcMethod() {
-        this.name = "MWL";
-        this.fajrAngle = 18.0;
-        this.ishaAngle = 17.0;
+        this.name = "ISNA";
+        this.fajrAngle = 15.0;
+        this.ishaAngle = 15.0;
         this.fixed = false;
-        this.description = "Muslim World League";
+        this.description = "Islamic Society of North America";
+    }
+
+    public double getFajrAngle(){
+        return this.fajrAngle;
+    }
+
+    public double getIshaAngle(){
+        return this.ishaAngle;
     }
 
     public String toString(){

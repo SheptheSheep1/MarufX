@@ -1,6 +1,7 @@
 package com.shep.marufx;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -14,23 +15,36 @@ public class PrayerTimes {
     private double utcOffset;
     private boolean asrHanafi;
     private Location location;
+    private CalcMethod calcMethod;
 
-    public PrayerTimes(int month, int day, int year, double utcOffset, Location location) {
+    public PrayerTimes(int month, int day, int year, double utcOffset, Location location, CalcMethod calcMethod) {
         this.month = month;
         this.day = day;
         this.year = year;
         this.utcOffset = utcOffset;
         this.asrHanafi = false;
         this.location = location;
+        this.calcMethod = calcMethod;
     }
 
-    public PrayerTimes(){
+    public PrayerTimes(int month, int day, int year, Location location, CalcMethod calcMethod) {
+        this.asrHanafi = false;
+        this.month = month;
+        this.day = day;
+        this.year = year;
+        this.location = location;
+        this.calcMethod = calcMethod;
+    }
+
+    public PrayerTimes(Location location){
         ZonedDateTime currentDateTime = getCurrentDateTime();
         this.month = currentDateTime.getMonthValue();
         this.day = currentDateTime.getDayOfMonth();
         this.year = currentDateTime.getYear();
         this.utcOffset = calcTimezone();
         this.asrHanafi = false;
+        this.calcMethod = new CalcMethod();
+        this.location = location;
     }
 
     private ZonedDateTime getCurrentDateTime(){
@@ -153,6 +167,7 @@ public class PrayerTimes {
     }
 
     public static HashMap<String, Double> calcHA(HashMap<String, Double> sunAltitudes, double latitude, double sunDecl){
+        // takes sunAltitudes, latitude, and sun declination angle and returns hashmap containing relevant prayers
         HashMap<String, Double> hourAngles = new HashMap<>();
 
         double v = Math.sin(Math.toRadians(latitude)) * Math.sin(Math.toRadians(sunDecl));
@@ -175,6 +190,67 @@ public class PrayerTimes {
         return hourAngles;
     }
 
+    public static double calcAsrDiff(double julianDays, double latitude, boolean asrHanafi, double sunDelta){
+        // takes julian days and latitude as parameters and returns asr difference (from solar noon)
+        // the asr difference has its own method because the way it is calculated is different from the rest and more complex
+        // Derived from praytimes.org documentation and US Naval Observatory Sun Approx docs
+
+        // Dominant hanafi opinion compensation (shadow length * 2)
+        int asrMethod = 1;
+        if(asrHanafi){asrMethod = 2;}
+
+        // time from epoch (j2000)
+        double d = julianDays - 2451545.0;
+        // mean anomaly of sun in deg
+        //double g = 357.529 + 0.98560028*d;
+        // mean longitude of sun in deg
+        //double q = 280.459 + 0.98564736*d;
+        // apparent ecliptic longitude of sun in deg (takes into account earth orbit eccentricity and axis tilt)
+        //double L = q + 1.915*Math.sin(Math.toRadians(g)) + 0.020 * Math.sin(Math.toRadians(2.0*g));
+        // obliquity of ecliptic in deg
+        //double e = 23.439 - 0.00000036*d;
+        // declination of Sun (may be redundant)
+        //double D = Math.toDegrees(Math.asin(Math.sin(Math.toRadians(e)) * Math.sin(Math.toRadians(L))));
+        //double D = -18.95;
+        //double[] uyt = calcSunDecl(julianDays);
+        //double D = uyt[1];
+        //System.out.println("D: " + D);
+        double D = sunDelta;
+
+        // (from praytimes: ) The following formula computes the time difference between the mid-day and the time at which the object's shadow equals t times the length of the object itself plus the length of that object's shadow at noon:
+        double top = Math.sin(Math.toRadians(Math.toDegrees(arccot(2.0+Math.tan(Math.toRadians(latitude - D)))) - Math.toDegrees((Math.sin(Math.toRadians(latitude))) * Math.sin(Math.toRadians(D)))));
+        double bottom = Math.cos(Math.toRadians(latitude)) * Math.cos(Math.toRadians(D));
+
+        return (1.0/15.0) * Math.toDegrees(Math.acos(top/bottom));
+    }
+
+    public HashMap<String, LocalDateTime> calcPrayerTimes(){
+        HashMap<String, LocalDateTime> prayerTimes = new HashMap<>();
+
+        double julianDays = calcJD(this.year, this.month, this.day);
+        double sunDecl = calcSunDecl(julianDays)[1];
+        double eqTime = calcEqTime(julianDays);
+        double sunTT = calcSunTT(this.utcOffset, this.location.getLongitude(), eqTime);
+        HashMap<String, Double> sunAltitudes = calcSunAltitudes(this.calcMethod.getFajrAngle(), this.calcMethod.getIshaAngle(), 0, this.asrHanafi, sunDecl, this.location.getLatitude());
+        HashMap<String, Double> hourAngles = calcHA(sunAltitudes, this.location.getLatitude(), sunDecl);
+
+        double fajr = sunTT - (hourAngles.get("fajr") / 15.0);
+        double sunrise = sunTT - hourAngles.get("sunrise") / 15.0;
+        double dhuhr = sunTT + 2.0/60.0;
+        double asr = dhuhr + calcAsrDiff(julianDays, location.getLatitude(), this.asrHanafi, sunDecl);
+        double maghrib = sunTT + (hourAngles.get("maghrib") / 15.0);
+        double isha = sunTT + hourAngles.get("isha") / 15.0;
+
+        prayerTimes.put("fajr", convertHrs(fajr));
+        prayerTimes.put("sunrise", convertHrs(sunrise));
+        prayerTimes.put("dhuhr", convertHrs(dhuhr));
+        prayerTimes.put("asr", convertHrs(asr));
+        prayerTimes.put("maghrib", convertHrs(maghrib));
+        prayerTimes.put("isha", convertHrs(isha));
+
+        return prayerTimes;
+    }
+
     public void printDateTime(){
         System.out.printf("\nMonth: %2d | ",this.month);
         System.out.printf("Day: %2d | ",this.day);
@@ -182,17 +258,28 @@ public class PrayerTimes {
         System.out.printf("UTC Offset: %2.1f\n", this.utcOffset);
     }
 
+    private static double arccot(double x){
+        return Math.PI / 2.0 - Math.atan(x);
+    }
+
+    private LocalDateTime convertHrs(double decimalHours){
+        // takes decimal hours and returns a LocalDateTime object representing that time on the day the object is in
+
+        int hours = (int) decimalHours;
+        double remainingMinutes = (decimalHours - hours) * 60;
+        int minutes = (int) remainingMinutes;
+        double remainingSeconds = (remainingMinutes - minutes) * 60;
+        int seconds = (int) Math.round(remainingSeconds);
+
+        return LocalDateTime.of(this.year, this.month, this.day, hours, minutes, seconds);
+    }
 
     public static void main (String[] args){
-        PrayerTimes prayertimes = new PrayerTimes();
-        prayertimes.printDateTime();
-        try {
-            Location location = new Location(true);
-            System.out.println(location.getLocationName());
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        }
-        double julianDays = PrayerTimes.calcJD(2024, 11, 15.738889);
+        //PrayerTimes prayertimes = new PrayerTimes();
+        //prayertimes.printDateTime();
+
+        double julianDays = PrayerTimes.calcJD(2024, 11, 15.886111);
+        System.out.println("Julian Days: "+julianDays);
         double[] sunDecl = calcSunDecl(julianDays);
         System.out.println(Arrays.toString(sunDecl));
         double eqTime = PrayerTimes.calcEqTime(julianDays);
@@ -203,5 +290,17 @@ public class PrayerTimes {
         System.out.println(sunAltitudes);
         HashMap<String, Double> hourAngles = PrayerTimes.calcHA(sunAltitudes, 33.4255117, sunDecl[1]);
         System.out.println(hourAngles);
+        double asrDiff = PrayerTimes.calcAsrDiff(julianDays, 33.4255117, true, sunDecl[1]);
+        System.out.println("Asr Differences: "+asrDiff);
+
+        try {
+            Location location = new Location(true);
+            System.out.println(location.getLocationName());
+            PrayerTimes prayerTimes = new PrayerTimes(location);
+            HashMap<String, LocalDateTime> prayTimes = prayerTimes.calcPrayerTimes();
+            System.out.println(prayTimes);
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
     }
 }

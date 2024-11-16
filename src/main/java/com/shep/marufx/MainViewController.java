@@ -3,6 +3,10 @@ package com.shep.marufx;
 import javafx.scene.control.Label;
 import javafx.fxml.FXML;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+
 public class MainViewController {
     @FXML
     private Label labell;
@@ -20,9 +24,13 @@ public class MainViewController {
     private Label isha;
 
     @FXML
+    private Label fajrTime;
+
+    @FXML
     protected void onButtonClick(){
         labell.setText("Guy Toubes");
         prayerLabels();
+        setPrayers();
     }
 
     @FXML
@@ -33,6 +41,18 @@ public class MainViewController {
         asr.setText("Asr");
         maghrib.setText("Maghrib");
         isha.setText("Isha");
+    }
+
+    @FXML
+    protected void setPrayers(){
+        try{
+            Location location = new Location(false);
+            PrayerTimes prayerTimes = new PrayerTimes(location);
+            HashMap<String, LocalDateTime> hashmap = prayerTimes.calcPrayerTimes();
+            fajrTime.setText(hashmap.get("fajr").toString());
+        } catch (IOException e) {
+            System.out.println(e);
+        }
     }
 
 
