@@ -135,16 +135,44 @@ public class PrayerTimes {
 
     public static HashMap<String, Double> calcSunAltitudes(double fajrAngle, double ishaAngle, int elevation, boolean asrHanafi, double sunDelta, double latitude){
         HashMap<String, Double> sunAltitudes = new HashMap<>();
+
         int asrMethod = 1;
-        if(asrHanafi == true){asrMethod = 2;}
+        if(asrHanafi){asrMethod = 2;}
+
         double saFajr = -(fajrAngle);
         double saSunrise = -0.8333 - (0.0347 * Math.sqrt((double)elevation));
         double saIsha  = -(ishaAngle);
+
         sunAltitudes.put("fajr", saFajr);
         sunAltitudes.put("sunrise", saSunrise);
-        sunAltitudes.put("maghrib", saSunrise);
         sunAltitudes.put("isha", saIsha);
+
+        //System.out.println(sunAltitudes);
+
         return sunAltitudes;
+    }
+
+    public static HashMap<String, Double> calcHA(HashMap<String, Double> sunAltitudes, double latitude, double sunDecl){
+        HashMap<String, Double> hourAngles = new HashMap<>();
+
+        double v = Math.sin(Math.toRadians(latitude)) * Math.sin(Math.toRadians(sunDecl));
+        double v1 = Math.cos(Math.toRadians(latitude)) * Math.cos(Math.toRadians(sunDecl));
+        double cos_HA_fajr = (Math.sin(Math.toRadians(sunAltitudes.get("fajr"))) - v) / v1;
+        double cos_HA_maghrib = (Math.sin(Math.toRadians(sunAltitudes.get("sunrise")))) - v / v1;
+        double cos_HA_isha = (Math.sin(Math.toRadians(sunAltitudes.get("isha"))) - v) / v1;
+
+        double haFajr = Math.toDegrees(Math.acos(cos_HA_fajr));
+        double haMaghrib = Math.toDegrees(Math.acos(cos_HA_maghrib));
+        double haIsha = Math.toDegrees(Math.acos(cos_HA_isha));
+
+        hourAngles.put("fajr", haFajr);
+        hourAngles.put("sunrise", haMaghrib);
+        hourAngles.put("maghrib", haMaghrib);
+        hourAngles.put("isha", haIsha);
+
+        //System.out.println(hourAngles);
+
+        return hourAngles;
     }
 
     public void printDateTime(){
@@ -164,9 +192,16 @@ public class PrayerTimes {
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
-        double julianDays = PrayerTimes.calcJD(2024, 11, 15.024306);
-        System.out.println(Arrays.toString(PrayerTimes.calcSunDecl(julianDays)));
-        System.out.println("Equation of Time: " + PrayerTimes.calcEqTime(julianDays));
-        System.out.println("Transit Time: " + PrayerTimes.calcSunTT(-7.0, -111.939896, PrayerTimes.calcEqTime(julianDays)));
+        double julianDays = PrayerTimes.calcJD(2024, 11, 15.738889);
+        double[] sunDecl = calcSunDecl(julianDays);
+        System.out.println(Arrays.toString(sunDecl));
+        double eqTime = PrayerTimes.calcEqTime(julianDays);
+        System.out.println("Equation of Time: " + eqTime);
+        double sunTT = calcSunTT(julianDays, -111.940016, eqTime);
+        System.out.println("Transit Time: " + sunTT);
+        HashMap<String, Double> sunAltitudes = PrayerTimes.calcSunAltitudes(15.0, 15,0, true, sunDecl[1], 33.4255117);
+        System.out.println(sunAltitudes);
+        HashMap<String, Double> hourAngles = PrayerTimes.calcHA(sunAltitudes, 33.4255117, sunDecl[1]);
+        System.out.println(hourAngles);
     }
 }
