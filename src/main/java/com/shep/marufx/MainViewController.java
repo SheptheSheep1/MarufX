@@ -51,6 +51,12 @@ public class MainViewController {
 
     private LocalDate currentDate;
 
+    private PrayerTimes prayerTimes;
+
+    private Location location;
+
+    private CalcMethod calcMethod;
+
     @FXML
     private Label dateLabel;
 
@@ -93,7 +99,7 @@ public class MainViewController {
         timeLabel.setText(currentTime);
     }
     private void updateDateLabel() {
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
         dateLabel.setText(currentDate.format(dateFormatter));
     }
     // Check for a day change and update the date label
@@ -104,22 +110,41 @@ public class MainViewController {
             updateDateLabel();
         }
     }
+    private void updatePrayers(){
+        fajr.setText(prayerTimes.getFajr());
+        sunrise.setText(prayerTimes.getSunrise());
+        dhuhr.setText(prayerTimes.getDhuhr());
+        asr.setText(prayerTimes.getAsr());
+        maghrib.setText(prayerTimes.getMaghrib());
+        isha.setText(prayerTimes.getIsha());
+    }
     @FXML
     public void initialize() {
-        // Update the label with the current time initially
-        updateTime();
+        try {
+            currentDate = LocalDate.now();
+            location = new Location(false);
+            calcMethod = new CalcMethod();
+            prayerTimes = new PrayerTimes(currentDate.getMonthValue(), currentDate.getDayOfMonth(), currentDate.getYear(), PrayerTimes.calcTimezone(), location, calcMethod,  true, 0.0);
+            // Update the label with the current time initially
+            updateTime();
+            updateDateLabel();
+            updatePrayers();
 
-        // Create a Timeline to update the time every second
-        Timeline timeTimeline = new Timeline(
-                new KeyFrame(Duration.seconds(1), event -> updateTime())
-        );
-        // Timeline for checking day change every minute
-        Timeline dateTimeline = new Timeline(
-                new KeyFrame(Duration.minutes(1), event -> checkForDayChange())
-        );
-        timeTimeline.setCycleCount(Timeline.INDEFINITE); // Run indefinitely
-        timeTimeline.play(); // Start the timeTimeline
-        dateTimeline.setCycleCount(Timeline.INDEFINITE);
-        dateTimeline.play();
+            // Create a Timeline to update the time every second
+            Timeline timeTimeline = new Timeline(
+                    new KeyFrame(Duration.seconds(1), event -> updateTime())
+            );
+            // Timeline for checking day change every minute
+            Timeline dateTimeline = new Timeline(
+                    new KeyFrame(Duration.minutes(1), event -> checkForDayChange())
+            );
+            timeTimeline.setCycleCount(Timeline.INDEFINITE); // Run indefinitely
+            timeTimeline.play(); // Start the timeTimeline
+            dateTimeline.setCycleCount(Timeline.INDEFINITE);
+            dateTimeline.play();
+        }
+        catch(IOException e){
+            System.out.println(e);
+        }
     }
 }

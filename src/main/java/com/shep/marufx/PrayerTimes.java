@@ -69,7 +69,7 @@ public class PrayerTimes {
         return ZonedDateTime.now();
     }
 
-    private double calcTimezone(){
+    public static double calcTimezone(){
         // Get the system default timezone
         ZoneId systemZoneId = ZoneId.systemDefault();
         // Get the current time with the system's timezone
