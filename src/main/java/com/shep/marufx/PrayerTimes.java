@@ -5,38 +5,53 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
 
 public class PrayerTimes {
-    private int month;
-    private int day;
-    private int year;
+    private final int month;
+    private final int day;
+    private final int year;
     private double utcOffset;
-    private boolean asrHanafi;
-    private Location location;
-    private CalcMethod calcMethod;
+    private final boolean asrHanafi;
+    private double adjustment;
 
-    public PrayerTimes(int month, int day, int year, double utcOffset, Location location, CalcMethod calcMethod) {
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
+    private final Location location;
+    private final CalcMethod calcMethod;
+
+    private LocalDateTime fajr;
+    private LocalDateTime sunrise;
+    private LocalDateTime dhuhr;
+    private LocalDateTime asr;
+    private LocalDateTime maghrib;
+    private LocalDateTime isha;
+
+    public PrayerTimes(int month, int day, int year, double utcOffset, Location location, CalcMethod calcMethod, boolean asrHanafi, double adjustment) {
         this.month = month;
         this.day = day;
         this.year = year;
         this.utcOffset = utcOffset;
-        this.asrHanafi = false;
         this.location = location;
         this.calcMethod = calcMethod;
+        this.asrHanafi = asrHanafi;
+        this.adjustment = adjustment;
+        setPrayerTimes(calcPrayerTimes());
     }
 
-    public PrayerTimes(int month, int day, int year, Location location, CalcMethod calcMethod) {
+    public PrayerTimes(int month, int day, int year, Location location, CalcMethod calcMethod, double adjustment) {
         this.asrHanafi = false;
         this.month = month;
         this.day = day;
         this.year = year;
         this.location = location;
         this.calcMethod = calcMethod;
+        this.adjustment = adjustment;
+        setPrayerTimes(calcPrayerTimes());
     }
 
-    public PrayerTimes(Location location){
+    public PrayerTimes(Location location, double adjustment){
         ZonedDateTime currentDateTime = getCurrentDateTime();
         this.month = currentDateTime.getMonthValue();
         this.day = currentDateTime.getDayOfMonth();
@@ -45,6 +60,8 @@ public class PrayerTimes {
         this.asrHanafi = false;
         this.calcMethod = new CalcMethod();
         this.location = location;
+        this.adjustment = adjustment;
+        setPrayerTimes(calcPrayerTimes());
     }
 
     private ZonedDateTime getCurrentDateTime(){
@@ -200,7 +217,7 @@ public class PrayerTimes {
         if(asrHanafi){asrMethod = 2;}
 
         // time from epoch (j2000)
-        double d = julianDays - 2451545.0;
+        //double d = julianDays - 2451545.0;
         // mean anomaly of sun in deg
         //double g = 357.529 + 0.98560028*d;
         // mean longitude of sun in deg
@@ -251,6 +268,39 @@ public class PrayerTimes {
         return prayerTimes;
     }
 
+    private void setPrayerTimes(HashMap<String, LocalDateTime> prayerTimes){
+        this.fajr = prayerTimes.get("fajr");
+        this.sunrise = prayerTimes.get("sunrise");
+        this.dhuhr = prayerTimes.get("dhuhr");
+        this.asr = prayerTimes.get("asr");
+        this.maghrib = prayerTimes.get("maghrib");
+        this.isha = prayerTimes.get("isha");
+    }
+
+    public String getFajr(){
+        return formatter.format(this.fajr);
+    }
+
+    public String getSunrise(){
+        return formatter.format(this.sunrise);
+    }
+
+    public String getDhuhr(){
+        return formatter.format(this.dhuhr);
+    }
+
+    public String getAsr(){
+        return formatter.format(this.asr);
+    }
+
+    public String getMaghrib(){
+        return formatter.format(this.maghrib);
+    }
+
+    public String getIsha(){
+        return formatter.format(this.isha);
+    }
+
     public void printDateTime(){
         System.out.printf("\nMonth: %2d | ",this.month);
         System.out.printf("Day: %2d | ",this.day);
@@ -296,9 +346,15 @@ public class PrayerTimes {
         try {
             Location location = new Location(true);
             System.out.println(location.getLocationName());
-            PrayerTimes prayerTimes = new PrayerTimes(location);
+            PrayerTimes prayerTimes = new PrayerTimes(location, 0.0);
             HashMap<String, LocalDateTime> prayTimes = prayerTimes.calcPrayerTimes();
             System.out.println(prayTimes);
+            System.out.println(prayerTimes.getFajr());
+            System.out.println(prayerTimes.getSunrise());
+            System.out.println(prayerTimes.getDhuhr());
+            System.out.println(prayerTimes.getAsr());
+            System.out.println(prayerTimes.getMaghrib());
+            System.out.println(prayerTimes.getIsha());
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
