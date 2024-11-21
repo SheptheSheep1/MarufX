@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #a4e0db;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.shep.marufx.MainViewController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #a4e0db;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <center>
       <HBox maxHeight="360.0" maxWidth="600.0" minHeight="306.0" minWidth="280.0" prefHeight="306.0" prefWidth="420.0" style="-fx-background-color: #99f0e7;" BorderPane.alignment="CENTER">
          <children>
@@ -118,12 +118,12 @@
          <children>
             <VBox maxHeight="249.0" maxWidth="200.0" minHeight="240.0" minWidth="200.0" opacity="0.5" prefHeight="249.0" prefWidth="200.0">
                <children>
-                  <Label alignment="CENTER" maxHeight="40.0" minHeight="40.0" prefHeight="50.0" prefWidth="1.23123321E8" text="XX:XX:XX XM" />
-                  <Label alignment="CENTER" maxHeight="40.0" minHeight="40.0" prefHeight="50.0" prefWidth="384.0" text="XX:XX:XX XM" />
-                  <Label alignment="CENTER" maxHeight="40.0" prefHeight="50.0" prefWidth="496.0" text="XX:XX:XX XM" />
-                  <Label alignment="CENTER" maxHeight="40.0" minHeight="40.0" prefHeight="50.0" prefWidth="489.0" text="XX:XX:XX XM" />
-                  <Label alignment="CENTER" maxHeight="40.0" minHeight="40.0" prefHeight="50.0" prefWidth="433.0" text="XX:XX:XX XM" />
-                  <Label alignment="CENTER" maxHeight="40.0" minHeight="40.0" prefHeight="45.0" prefWidth="457.0" text="XX:XX:XX XM" />
+                  <Label fx:id="tFajr" alignment="CENTER" maxHeight="40.0" minHeight="40.0" prefHeight="50.0" prefWidth="1.23123321E8" text="XX:XX:XX XM" />
+                  <Label fx:id="tSunrise" alignment="CENTER" maxHeight="40.0" minHeight="40.0" prefHeight="50.0" prefWidth="384.0" text="XX:XX:XX XM" />
+                  <Label fx:id="tDhuhr" alignment="CENTER" maxHeight="40.0" prefHeight="50.0" prefWidth="496.0" text="XX:XX:XX XM" />
+                  <Label fx:id="tAsr" alignment="CENTER" maxHeight="40.0" minHeight="40.0" prefHeight="50.0" prefWidth="489.0" text="XX:XX:XX XM" />
+                  <Label fx:id="tMaghrib" alignment="CENTER" maxHeight="40.0" minHeight="40.0" prefHeight="50.0" prefWidth="433.0" text="XX:XX:XX XM" />
+                  <Label fx:id="tIsha" alignment="CENTER" maxHeight="40.0" minHeight="40.0" prefHeight="45.0" prefWidth="457.0" text="XX:XX:XX XM" />
                </children>
             </VBox>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
@@ -143,7 +143,7 @@
    <top>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <Label alignment="CENTER" maxWidth="789.0" minWidth="200.0" prefHeight="0.0" prefWidth="789.0" text="November XX" textAlignment="CENTER" textFill="#00000080">
+            <Label fx:id="ydateLabel" alignment="CENTER" maxWidth="789.0" minWidth="200.0" prefHeight="0.0" prefWidth="789.0" text="November XX" textAlignment="CENTER" textFill="#00000080">
                <HBox.margin>
                   <Insets top="90.0" />
                </HBox.margin>
@@ -177,7 +177,7 @@
                   </Label>
                </children>
             </VBox>
-            <Label alignment="CENTER" maxWidth="200.0" minWidth="200.0" prefHeight="0.0" prefWidth="735.0" text="November XX" textAlignment="CENTER" textFill="#00000080">
+            <Label fx:id="tdateLabel" alignment="CENTER" maxWidth="200.0" minWidth="200.0" prefHeight="0.0" prefWidth="735.0" text="November XX" textAlignment="CENTER" textFill="#00000080">
                <HBox.margin>
                   <Insets top="90.0" />
                </HBox.margin>
@@ -196,17 +196,17 @@
          <children>
             <VBox maxHeight="249.0" maxWidth="200.0" minHeight="240.0" minWidth="200.0" opacity="0.5" prefHeight="249.0" prefWidth="200.0">
                <children>
-                  <Label alignment="CENTER" maxHeight="40.0" minHeight="40.0" prefHeight="50.0" prefWidth="1.23123321E8" text="XX:XX:XX XM" />
-                  <Label alignment="CENTER" maxHeight="40.0" minHeight="40.0" prefHeight="50.0" prefWidth="384.0" text="XX:XX:XX XM" />
-                  <Label alignment="CENTER" maxHeight="40.0" prefHeight="50.0" prefWidth="496.0" text="XX:XX:XX XM" />
-                  <Label alignment="CENTER" maxHeight="40.0" minHeight="40.0" prefHeight="50.0" prefWidth="489.0" text="XX:XX:XX XM" />
-                  <Label alignment="CENTER" maxHeight="40.0" minHeight="40.0" prefHeight="50.0" prefWidth="433.0" text="XX:XX:XX XM" />
-                  <Label alignment="CENTER" maxHeight="40.0" minHeight="40.0" prefHeight="45.0" prefWidth="457.0" text="XX:XX:XX XM" />
+                  <Label fx:id="yFajr" alignment="CENTER" maxHeight="40.0" minHeight="40.0" prefHeight="50.0" prefWidth="1.23123321E8" text="XX:XX:XX XM" />
+                  <Label fx:id="ySunrise" alignment="CENTER" maxHeight="40.0" minHeight="40.0" prefHeight="50.0" prefWidth="384.0" text="XX:XX:XX XM" />
+                  <Label fx:id="yDhuhr" alignment="CENTER" maxHeight="40.0" prefHeight="50.0" prefWidth="496.0" text="XX:XX:XX XM" />
+                  <Label fx:id="yAsr" alignment="CENTER" maxHeight="40.0" minHeight="40.0" prefHeight="50.0" prefWidth="489.0" text="XX:XX:XX XM" />
+                  <Label fx:id="yMaghrib" alignment="CENTER" maxHeight="40.0" minHeight="40.0" prefHeight="50.0" prefWidth="433.0" text="XX:XX:XX XM" />
+                  <Label fx:id="yIsha" alignment="CENTER" maxHeight="40.0" minHeight="40.0" prefHeight="45.0" prefWidth="457.0" text="XX:XX:XX XM" />
                </children>
             </VBox>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <MFXButton alignment="CENTER" buttonType="RAISED" contentDisplay="CENTER" maxHeight="50.0" maxWidth="120.0" minHeight="50.0" minWidth="120.0" prefHeight="50.0" prefWidth="100.0" text="⚙ Settings" textAlignment="CENTER">
+                  <MFXButton alignment="CENTER" buttonType="RAISED" contentDisplay="CENTER" maxHeight="50.0" maxWidth="120.0" minHeight="50.0" minWidth="120.0" onAction="#handleSettingsButton" prefHeight="50.0" prefWidth="100.0" text="⚙ Settings" textAlignment="CENTER">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>

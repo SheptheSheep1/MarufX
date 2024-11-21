@@ -235,7 +235,7 @@ public class PrayerTimes {
         double D = sunDelta;
 
         // (from praytimes: ) The following formula computes the time difference between the mid-day and the time at which the object's shadow equals t times the length of the object itself plus the length of that object's shadow at noon:
-        double top = Math.sin(Math.toRadians(Math.toDegrees(arccot(2.0+Math.tan(Math.toRadians(latitude - D)))) - Math.toDegrees((Math.sin(Math.toRadians(latitude))) * Math.sin(Math.toRadians(D)))));
+        double top = Math.sin(Math.toRadians(Math.toDegrees(arccot(((double)asrMethod)+Math.tan(Math.toRadians(latitude - D)))) - Math.toDegrees((Math.sin(Math.toRadians(latitude))) * Math.sin(Math.toRadians(D)))));
         double bottom = Math.cos(Math.toRadians(latitude)) * Math.cos(Math.toRadians(D));
 
         return (1.0/15.0) * Math.toDegrees(Math.acos(top/bottom));
