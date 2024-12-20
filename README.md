@@ -26,3 +26,10 @@
 - Hook into system notifications and potentially task scheduler
 - Add altitude compensation methods
 - Add qibla feature using coordinates and length approximation
+
+##### Related Links
+- [Radhi Fadlillah Blog](https://radhifadlillah.com/blog/2020-09-06-calculating-prayer-times/)
+- [PrayTimes.org Manual](http://praytimes.org/manual)
+- [US NOAA - Solar Calculator](https://gml.noaa.gov/grad/solcalc/)
+- [SunCalc.org](https://www.suncalc.org/)
+- [AlAdhan API](https://aladhan.com/prayer-times-api)
